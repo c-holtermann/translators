@@ -9,7 +9,7 @@
 	"inRepository": true,
 	"translatorType": 4,
 	"browserSupport": "gcsibv",
-	"lastUpdated": "2020-12-12 12:56:25"
+	"lastUpdated": "2020-12-12 15:21:58"
 }
 
 /*
@@ -91,6 +91,9 @@ function scrapeMerkurstab(doc, url){
 	var main = doc.getElementById('contentMain');
     if (!main) return false;
     
+    newItem.publicationTitle = "Der Merkurstab. Zeitschrift für Anthroposophische Medizin";
+    newItem.ISSN = "0935798X";
+    
     var title = ZU.xpathText(main, './/article[@class="article"]//h1[@class="title"]');
 	Z.debug(title);
 	newItem.title = title;
@@ -104,13 +107,54 @@ function scrapeMerkurstab(doc, url){
 		newItem.creators.push(Zotero.Utilities.cleanAuthor(author, "author", false));
 	}
 	
+	var article_info = ZU.xpathText(main, './/p[@class="article-data"]/span[@class="article-info"]');
+	Z.debug(article_info);
+	info_re = /(Der Merkurstab )?(\d{4});(\d{1,2})\((\d+)\):([\d\w-]+)/;
+	res = info_re.exec(article_info);
+	
+	Z.debug(res);
+	
+	var year = res[2];
+	Z.debug("year: "+year);
+	newItem.date = year;
+	
+	var volume = res[3];
+	Z.debug("volume: "+volume);
+	newItem.volume = volume;
+	
+	var issue = res[4];
+	Z.debug("issue: "+issue);
+	newItem.issue = issue;
+	
+	var pages = res[5];
+	Z.debug("pages: "+pages);
+	newItem.pages = pages;
+	
 	var DOI = ZU.cleanDOI(ZU.xpathText(main, './/p[@class="article-data"]/span[@class="article-doi"]/a'));
     Z.debug(DOI);
     newItem.DOI = DOI;
 	
+	var language = DOI.slice(-2);
+	Z.debug("language: "+language);
+	newItem.language = language;
+	
 	var abstract = ZU.xpathText(main, './/article[@class="article"]//div[@id="abstract_de"]/p');
-    Z.debug(abstract);
+    Z.debug("abstractNote: "+abstract);
     newItem.abstractNote = abstract;
+	
+	var article_id = ZU.xpathText(main, './/p[@class="article-data"]/span[@class="article-id"]');
+	var re_article_id = /Artikel-ID: (\w{3}-\d{5}-\w{2})/;
+	var article_id_re = re_article_id.exec(article_id);
+	var article_id_clean = article_id_re[1];
+	Z.debug(article_id_clean);
+	
+	var pdfurl = "https://www.anthromedics.org/" + article_id_clean + ".pdf";
+	Z.debug("pdfurl: "+pdfurl);
+    newItem.attachments.push({
+	    title:"Full Text PDF",
+	    mimeType:"application/pdf",
+	    url:pdfurl
+    });
 	
 	newItem.complete();
 }
