@@ -9,7 +9,7 @@
 	"inRepository": true,
 	"translatorType": 4,
 	"browserSupport": "gcsibv",
-	"lastUpdated": "2020-12-12 12:43:27"
+	"lastUpdated": "2020-12-12 12:56:25"
 }
 
 /*
@@ -104,9 +104,13 @@ function scrapeMerkurstab(doc, url){
 		newItem.creators.push(Zotero.Utilities.cleanAuthor(author, "author", false));
 	}
 	
-	var DOI = ZU.xpathText(main, './/p[@class="article-data"]/span[@class="article-doi"]/a');
+	var DOI = ZU.cleanDOI(ZU.xpathText(main, './/p[@class="article-data"]/span[@class="article-doi"]/a'));
     Z.debug(DOI);
     newItem.DOI = DOI;
+	
+	var abstract = ZU.xpathText(main, './/article[@class="article"]//div[@id="abstract_de"]/p');
+    Z.debug(abstract);
+    newItem.abstractNote = abstract;
 	
 	newItem.complete();
 }
