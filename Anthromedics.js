@@ -9,7 +9,7 @@
 	"inRepository": true,
 	"translatorType": 4,
 	"browserSupport": "gcsibv",
-	"lastUpdated": "2020-12-12 10:39:03"
+	"lastUpdated": "2020-12-12 12:43:27"
 }
 
 /*
@@ -39,10 +39,10 @@
 function detectWeb(doc, url) {
 	// TODO: adjust the logic here
 	if (url.includes('/PRA-')) {
-		return "newspaperArticle";
+		return "journalArticle";
 	}
 	else if (url.includes('/DMS-')) {
-		return "newspaperArticle";
+		return "journalArticle";
 	}
 	else if (getSearchResults(doc, true)) {
 		return "multiple";
@@ -55,17 +55,20 @@ function getSearchResults(doc, checkOnly) {
 	var found = false;
 	// TODO: adjust the CSS selector
 	var rows = doc.querySelectorAll('div.title>a[href*="/DMS"],div.title>a[href*="/PRA"]');
-	Z.debug(rows);
+	//Z.debug(rows);
 	for (let row of rows) {
+		//Z.debug(row);
 		// TODO: check and maybe adjust
 		let href = row.href;
 		// TODO: check and maybe adjust
 		let title = ZU.trimInternal(row.textContent);
+		Z.debug(href+" "+title);
 		if (!href || !title) continue;
 		if (checkOnly) return true;
 		found = true;
 		items[href] = title;
 	}
+	Z.debug(items);
 	return found ? items : false;
 }
 
@@ -77,5 +80,50 @@ function doWeb(doc, url) {
 	}
 	else {
 		scrape(doc, url);
+	}
+}
+
+function scrapeMerkurstab(doc, url){
+	var newItem = new Zotero.Item("journalArticle");
+	newItem.url = doc.location.href;
+	Z.debug(newItem);
+	
+	var main = doc.getElementById('contentMain');
+    if (!main) return false;
+    
+    var title = ZU.xpathText(main, './/article[@class="article"]//h1[@class="title"]');
+	Z.debug(title);
+	newItem.title = title;
+    
+    var authors = ZU.xpathText(main, './/p[@class="article-data"]/span[@class="authors"]/a');
+	// Z.debug(authors);
+	authors = authors.split(",");
+	Z.debug(authors);
+	for (let author of authors) {
+		Z.debug(author);
+		newItem.creators.push(Zotero.Utilities.cleanAuthor(author, "author", false));
+	}
+	
+	var DOI = ZU.xpathText(main, './/p[@class="article-data"]/span[@class="article-doi"]/a');
+    Z.debug(DOI);
+    newItem.DOI = DOI;
+	
+	newItem.complete();
+}
+
+function scrapePractical(doc, url){
+	
+}
+
+function scrape(doc, url) {
+	var namespace = doc.documentElement.namespaceURI;
+    var nsResolver = namespace ? function(prefix) {
+	if (prefix == 'x') return namespace; else return null;
+	} : null;
+
+	if (url.includes('/DMS-')) {
+		return scrapeMerkurstab(doc, url);
+	} else if (url.includes('/PRA-')) {
+		return scrapePractical(doc, url);
 	}
 }
