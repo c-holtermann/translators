@@ -146,8 +146,8 @@ function scrapeMerkurstab(doc, url){
 	}
 	
 	var abstract = ZU.xpathText(main, './/article[@class="article"]//div[@id="abstract_de"]/p');
-    Z.debug("abstractNote: "+abstract);
-    newItem.abstractNote = abstract;
+	Z.debug("abstractNote: "+abstract);
+	newItem.abstractNote = abstract;
 	
 	var article_id = ZU.xpathText(main, './/p[@class="article-data"]/span[@class="article-id"]');
 	var re_article_id = /Artikel-ID: (\w{3}-\d{5}-\w{2})/;
@@ -157,11 +157,11 @@ function scrapeMerkurstab(doc, url){
 	
 	var pdfurl = "https://www.anthromedics.org/" + article_id_clean + ".pdf";
 	Z.debug("pdfurl: "+pdfurl);
-    newItem.attachments.push({
-	    title:"Full Text PDF",
-	    mimeType:"application/pdf",
-	    url:pdfurl
-    });
+	newItem.attachments.push({
+		title:"Full Text PDF",
+		mimeType:"application/pdf",
+		url:pdfurl
+	});
 	
 	newItem.complete();
 }
@@ -172,7 +172,7 @@ function scrapePractical(doc, url){
 
 function scrape(doc, url) {
 	var namespace = doc.documentElement.namespaceURI;
-    var nsResolver = namespace ? function(prefix) {
+	var nsResolver = namespace ? function(prefix) {
 	if (prefix == 'x') return namespace; else return null;
 	} : null;
 
