@@ -89,12 +89,12 @@ function scrapeMerkurstab(doc, url){
 	Z.debug(newItem);
 	
 	var main = doc.getElementById('contentMain');
-    if (!main) return false;
-    
-    newItem.publicationTitle = "Der Merkurstab. Zeitschrift für Anthroposophische Medizin";
-    newItem.ISSN = "0935798X";
-    
-    var title = ZU.xpathText(main, './/article[@class="article"]//h1[@class="title"]');
+	if (!main) return false;
+	
+	newItem.publicationTitle = "Der Merkurstab. Zeitschrift für Anthroposophische Medizin";
+	newItem.ISSN = "0935798X";
+	
+	var title = ZU.xpathText(main, './/article[@class="article"]//h1[@class="title"]');
 	Z.debug(title);
 	newItem.title = title;
     
