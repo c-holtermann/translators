@@ -134,13 +134,16 @@ function scrapeMerkurstab(doc, url){
 	Z.debug("pages: "+pages);
 	newItem.pages = pages;
 	
-	var DOI = ZU.cleanDOI(ZU.xpathText(main, './/p[@class="article-data"]/span[@class="article-doi"]/a'));
-    Z.debug(DOI);
-    newItem.DOI = DOI;
+	var DOI_dirty = ZU.xpathText(main, './/p[@class="article-data"]/span[@class="article-doi"]/a');
+	if (DOI_dirty) {
+		var DOI = ZU.cleanDOI();
+		Z.debug(DOI);
+		newItem.DOI = DOI;
 	
-	var language = DOI.slice(-2);
-	Z.debug("language: "+language);
-	newItem.language = language;
+		var language = DOI.slice(-2);
+		Z.debug("language: "+language);
+		newItem.language = language;
+	}
 	
 	var abstract = ZU.xpathText(main, './/article[@class="article"]//div[@id="abstract_de"]/p');
     Z.debug("abstractNote: "+abstract);
