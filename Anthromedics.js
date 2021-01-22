@@ -97,14 +97,18 @@ function scrapeMerkurstab(doc, url){
 	var title = ZU.xpathText(main, './/article[@class="article"]//h1[@class="title"]');
 	Z.debug(title);
 	newItem.title = title;
-    
-    var authors = ZU.xpathText(main, './/p[@class="article-data"]/span[@class="authors"]/a');
-	// Z.debug(authors);
-	authors = authors.split(",");
+	
+	var authors = ZU.xpathText(main, './/p[@class="article-data"]/span[@class="authors"]/a');
 	Z.debug(authors);
-	for (let author of authors) {
-		Z.debug(author);
-		newItem.creators.push(Zotero.Utilities.cleanAuthor(author, "author", false));
+	if (authors) {
+		authors = authors.split(",");
+		Z.debug(authors);
+		for (let author of authors) {
+			Z.debug(author);
+			newItem.creators.push(Zotero.Utilities.cleanAuthor(author, "author", false));
+		}
+	} else {
+		newItem.creators.push(Zotero.Utilities.cleanAuthor("undefined", "author", false));
 	}
 	
 	var article_info = ZU.xpathText(main, './/p[@class="article-data"]/span[@class="article-info"]');
